@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+    <s:Body>
+        <u:GetAddonInfosResponse xmlns:u="urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1">
+            <NewByteSendRate>503</NewByteSendRate>
+            <NewByteReceiveRate>264</NewByteReceiveRate>
+            <NewPacketSendRate>0</NewPacketSendRate>
+            <NewPacketReceiveRate>0</NewPacketReceiveRate>
+            <NewTotalBytesSent>49443678922</NewTotalBytesSent>
+            <NewTotalBytesReceived>779511639281</NewTotalBytesReceived>
+            <NewAutoDisconnectTime>0</NewAutoDisconnectTime>
+            <NewIdleDisconnectTime>0</NewIdleDisconnectTime>
+            <NewDNSServer1>217.237.151.115</NewDNSServer1>
+            <NewDNSServer2>217.237.148.102</NewDNSServer2>
+            <NewVoipDNSServer1>217.237.151.115</NewVoipDNSServer1>
+            <NewVoipDNSServer2>217.237.148.102</NewVoipDNSServer2>
+            <NewUpnpControlEnabled>1</NewUpnpControlEnabled>
+            <NewRoutedBridgedModeBoth>1</NewRoutedBridgedModeBoth>
+        </u:GetAddonInfosResponse>
+    </s:Body>
+</s:Envelope>

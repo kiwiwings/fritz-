@@ -1,0 +1,14 @@
+POST /igdupnp/control/WANCommonIFC1 HTTP/1.1
+Host: 192.168.178.1:49000
+Content-Type: text/xml; charset="utf-8"
+SOAPACTION: "urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1#GetAddonInfos"
+Cache-Control: no-cache
+Postman-Token: 428021ee-2a85-e589-a97e-653b3fe0f28d
+
+<?xml version="1.0"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"
+        s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <s:Body>
+    <u:GetAddonInfos xmlns:u="urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1"/>
+  </s:Body>
+</s:Envelope>
