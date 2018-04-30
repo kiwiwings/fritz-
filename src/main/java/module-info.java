@@ -6,5 +6,5 @@ module de.kiwiwings.monfritz {
     requires javafx.controls;
     exports de.kiwiwings.monfritz;
     exports eu.hansolo.fx.smoothcharts;
-    opens de.kiwiwings.monfritz to java.xml.bind, javafx.base, javafx.graphics, javafx.controls;
+    opens de.kiwiwings.monfritz to java.xml.bind;
 }
