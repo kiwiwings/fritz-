@@ -40,13 +40,22 @@ import java.util.LinkedList;
 
 public class FritzPoller extends Application {
 
+    private ScheduledService<GetAddonInfosResponse> svc;
     private XYChart.Series<String, Number> sentBytesSeries;
     private XYChart.Series<String, Number> recvBytesSeries;
     private SimpleDateFormat dateFormat;
-    private static final int dataLimit = 10;
+    private static final int dataLimit = 20;
+    private static final double dataIntervalInSec = 1;
 
     @Override
     public void init() {
+        svc = new ScheduledService<>() {
+            protected Task<GetAddonInfosResponse> createTask() {
+                return new FritzPollerTask();
+            }
+        };
+        svc.setPeriod(Duration.seconds(dataIntervalInSec));
+        svc.setOnSucceeded(this::addDataToSeries);
         sentBytesSeries = new XYChart.Series<>("sent", FXCollections.observableList(new LinkedList<>()));
         recvBytesSeries = new XYChart.Series<>("recv", FXCollections.observableList(new LinkedList<>()));
         dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -54,16 +63,7 @@ public class FritzPoller extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        ScheduledService<GetAddonInfosResponse> svc = new ScheduledService<>() {
-            protected Task<GetAddonInfosResponse> createTask() {
-                return new FritzPollerTask();
-            }
-        };
-
-        svc.setPeriod(Duration.seconds(2));
-        svc.setOnSucceeded(this::addDataToSeries);
         svc.start();
-
 
         primaryStage.setTitle("Mon-Fritz transfer stats");
 
@@ -71,6 +71,7 @@ public class FritzPoller extends Application {
         na.setLabel("bytes/sec");
         final CategoryAxis ca = new CategoryAxis();
         ca.setLabel("time");
+        ca.setTickLabelRotation(45  );
 
         SmoothedChart<String, Number> chart = new SmoothedChart<>(ca, na);
         chart.getData().add(sentBytesSeries);
@@ -81,8 +82,6 @@ public class FritzPoller extends Application {
         chart.setChartPlotBackground(Color.rgb(31, 31, 31));
         chart.getStrokePath(sentBytesSeries).setStrokeWidth(3);
         chart.getStrokePath(recvBytesSeries).setStrokeWidth(3);
-
-        //        chart.getStrokePath(sentBytesSeries).setStroke(Color.rgb(50, 240, 30));
 
 
         StackPane root = new StackPane();
