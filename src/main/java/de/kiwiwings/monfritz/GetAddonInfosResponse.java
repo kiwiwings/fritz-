@@ -19,6 +19,7 @@ package de.kiwiwings.monfritz;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+@SuppressWarnings("WeakerAccess")
 @XmlRootElement(name = "GetAddonInfosResponse", namespace = "urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1")
 public class GetAddonInfosResponse {
     @XmlElement(name = "NewByteSendRate")

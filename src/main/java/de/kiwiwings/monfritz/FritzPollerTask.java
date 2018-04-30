@@ -28,7 +28,16 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class FritzPollerTask extends Task<GetAddonInfosResponse> {
+/**
+ * Poller which requests the data from the Fritz.Box
+ * inspired by http://dede67.bplaced.net/PhythonScripte/bwm/Bandbreitenmonitor.html
+ *
+ * @param <T> the response class
+ */
+public class FritzPollerTask<T> extends Task<T> {
+    private static final String FritzURL = "http://192.168.178.1:49000/igdupnp/control/WANCommonIFC1";
+
+
     private static final String requestTmpl =
         "<?xml version=\"1.0\"?>\n" +
         "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
@@ -38,21 +47,43 @@ public class FritzPollerTask extends Task<GetAddonInfosResponse> {
         "  </s:Body>\n" +
         "</s:Envelope>";
 
-    @Override
-    protected GetAddonInfosResponse call() {
-        running();
-        // inspired by http://dede67.bplaced.net/PhythonScripte/bwm/Bandbreitenmonitor.html
+    private final String ifcAction;
+    private final Class<T> responseClass;
+    private final XMLInputFactory xif;
+    private final Unmarshaller unmarshaller;
+
+    static FritzPollerTask<GetAddonInfosResponse> getAddonInfos() {
+        return new FritzPollerTask<>(GetAddonInfosResponse.class, "GetAddonInfos");
+    }
+
+    static FritzPollerTask<GetCommonLinkPropertiesResponse> getCommonLinkProperties() {
+        return new FritzPollerTask<>(GetCommonLinkPropertiesResponse.class, "GetCommonLinkProperties");
+    }
+
+
+    private FritzPollerTask(Class<T> responseClass, String ifcAction) {
+        this.ifcAction = ifcAction;
+        this.responseClass = responseClass;
+
+        xif = XMLInputFactory.newInstance();
 
         try {
-            final String ifcAction = "GetAddonInfos"; // or GetCommonLinkProperties
+            final JAXBContext jc = JAXBContext.newInstance(responseClass);
+            unmarshaller = jc.createUnmarshaller();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    @Override
+    protected T call() {
+        running();
+
+        try {
             final byte[] request = String.format(requestTmpl, ifcAction).getBytes("UTF-8");
 
-            final URL url = new URL("http://192.168.178.1:49000/igdupnp/control/WANCommonIFC1");
+            final URL url = new URL(FritzURL);
 
-            final XMLInputFactory xif = XMLInputFactory.newInstance();
-            final JAXBContext jc = JAXBContext.newInstance(GetAddonInfosResponse.class);
-            final Unmarshaller unmarshaller = jc.createUnmarshaller();
             final byte[] buf = new byte[1024];
 
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -66,14 +97,14 @@ public class FritzPollerTask extends Task<GetAddonInfosResponse> {
                 os.write(request);
             }
 
-            JAXBElement<GetAddonInfosResponse> je;
+            JAXBElement<T> je;
             try (InputStream is = con.getInputStream()) {
                 XMLStreamReader xsr = xif.createXMLStreamReader(is);
                 xsr.nextTag(); // Advance to Envelope tag
                 xsr.nextTag(); // Advance to Body tag
                 xsr.nextTag(); // Advance to getNumberResponse tag
 
-                je = unmarshaller.unmarshal(xsr, GetAddonInfosResponse.class);
+                je = unmarshaller.unmarshal(xsr, responseClass);
 
                 //noinspection StatementWithEmptyBody
                 while (is.read(buf) != -1) {
@@ -92,7 +123,11 @@ public class FritzPollerTask extends Task<GetAddonInfosResponse> {
         } catch (Exception ex) {
             ex.printStackTrace();
             succeeded();
-            return new GetAddonInfosResponse();
+            try {
+                return responseClass.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
