@@ -16,17 +16,18 @@
 
 package de.kiwiwings.monfritz;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Unmarshaller;
 import javafx.concurrent.Task;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Poller which requests the data from the Fritz.Box
@@ -80,7 +81,7 @@ public class FritzPollerTask<T> extends Task<T> {
         running();
 
         try {
-            final byte[] request = String.format(requestTmpl, ifcAction).getBytes("UTF-8");
+            final byte[] request = String.format(requestTmpl, ifcAction).getBytes(StandardCharsets.UTF_8);
 
             final URL url = new URL(FritzURL);
 

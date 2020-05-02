@@ -51,8 +51,8 @@ public class FritzPoller extends Application {
     private final long[] data = new long[Series.values().length];
 
     private SmoothedChart<String, Number> chart;
-    
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private static final int dataLimit = 20;
     private static final double dataIntervalInSec = 1;
 
@@ -102,7 +102,7 @@ public class FritzPoller extends Application {
         chart.setSmoothed(true);
         chart.setChartType(SmoothedChart.ChartType.AREA);
         chart.setChartPlotBackground(Color.rgb(31, 31, 31));
-        
+
         for (Series s : Series.values()) {
             final XYChart.Series<String, Number> xys = new XYChart.Series<>(
                     s.name(), FXCollections.observableList(new LinkedList<>()));
